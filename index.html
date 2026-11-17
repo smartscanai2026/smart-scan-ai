@@ -48,7 +48,11 @@
   <script>
     let scanner = null;
     let running = false;
+const APP_SCRIPT_URL =
+"https://script.google.com/a/macros/thepbodint.ac.th/s/AKfycbzk-QJm0jj5UHBZ4dbscjRZD8Mn7r087f8Im0ZI8L7AWj1faHfylK_4Xp_FrD9Of189rw/exec";
 
+const scanToken =
+new URLSearchParams(window.location.search).get("token") || "";
     async function startScanner() {
       const message = document.getElementById("message");
 
@@ -71,14 +75,45 @@
             fps: 10,
             qrbox: { width: 230, height: 230 }
           },
-          async function(decodedText) {
+
+async function(decodedText) {
   message.textContent = "กำลังอ่านรหัสนักเรียน...";
+
   if (scanner && running) {
     await scanner.stop();
     running = false;
   }
+
   message.textContent = "อ่าน QR สำเร็จ: " + decodedText;
+
+  if (!scanToken) {
+    message.textContent =
+      "อ่าน QR สำเร็จ: " + decodedText +
+      " แต่ยังไม่มีรหัสเชื่อมต่อ";
+    return;
+  }
+
+  const sendUrl =
+    APP_SCRIPT_URL +
+    "?page=saveScan" +
+    "&token=" + encodeURIComponent(scanToken) +
+    "&studentId=" + encodeURIComponent(decodedText);
+
+  try {
+    await fetch(sendUrl, {
+      method: "GET",
+      mode: "no-cors"
+    });
+
+    message.textContent =
+      "อ่าน QR สำเร็จ: " + decodedText +
+      " กำลังส่งข้อมูลเข้าสู่ระบบ";
+  } catch (error) {
+    message.textContent =
+      "อ่าน QR สำเร็จ แต่ส่งข้อมูลไม่สำเร็จ";
+  }
 },
+
           function() {}
         );
 
