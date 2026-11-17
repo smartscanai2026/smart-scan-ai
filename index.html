@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Scan AI</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f7f2;
+      text-align: center;
+      padding: 20px;
+      color: #234;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+    }
+    h2 { color: #16834a; }
+    button {
+      background: #16834a;
+      color: white;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 20px;
+      margin: 8px;
+      font-size: 16px;
+    }
+    #reader { width: 100%; margin-top: 15px; }
+    #message { margin-top: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Smart Scan AI</h2>
+    <p>ระบบสแกน QR Code นักเรียน</p>
+    <button onclick="startScanner()">เปิดกล้องสแกน QR</button>
+    <button onclick="stopScanner()">ปิดกล้อง</button>
+    <div id="reader"></div>
+    <p id="message">พร้อมใช้งาน</p>
+  </div>
+
+  <script>
+    let scanner = null;
+    let running = false;
+
+    async function startScanner() {
+      const message = document.getElementById("message");
+
+      try {
+        if (typeof Html5Qrcode === "undefined") {
+          throw new Error("โหลดระบบอ่าน QR ไม่สำเร็จ");
+        }
+
+        if (!scanner) {
+          scanner = new Html5Qrcode("reader");
+        }
+
+        if (running) return;
+
+        message.textContent = "กำลังเปิดกล้อง...";
+
+        await scanner.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 230, height: 230 }
+          },
+          function(decodedText) {
+            message.textContent = "อ่าน QR สำเร็จ: " + decodedText;
+            stopScanner();
+          },
+          function() {}
+        );
+
+        running = true;
+        message.textContent = "เปิดกล้องสำเร็จ กรุณาสแกน QR Code";
+
+      } catch (error) {
+        message.textContent =
+          "เปิดกล้องไม่สำเร็จ: " +
+          error.name + " / " + error.message;
+      }
+    }
+
+    async function stopScanner() {
+      if (scanner && running) {
+        await scanner.stop();
+        running = false;
+        document.getElementById("message").textContent = "ปิดกล้องแล้ว";
+      }
+    }
+  </script>
+</body>
+</html>
