@@ -71,10 +71,14 @@
             fps: 10,
             qrbox: { width: 230, height: 230 }
           },
-          function(decodedText) {
-            message.textContent = "อ่าน QR สำเร็จ: " + decodedText;
-            stopScanner();
-          },
+          async function(decodedText) {
+  message.textContent = "กำลังอ่านรหัสนักเรียน...";
+  if (scanner && running) {
+    await scanner.stop();
+    running = false;
+  }
+  message.textContent = "อ่าน QR สำเร็จ: " + decodedText;
+},
           function() {}
         );
 
