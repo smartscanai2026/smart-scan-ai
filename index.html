@@ -101,7 +101,7 @@ console.log("QR STUDENT ID:", decodedText);
     "?page=saveScan" +
     "&token=" + encodeURIComponent(scanToken) +
     "&studentId=" + encodeURIComponent(decodedText);
-
+alert("URL ที่กำลังส่ง:\n" + sendUrl);
   try {
     await fetch(sendUrl, {
       method: "GET",
