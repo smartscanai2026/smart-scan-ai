@@ -53,6 +53,7 @@ const APP_SCRIPT_URL =
 
 const scanToken =
 new URLSearchParams(window.location.search).get("token") || "";
+    alert("TOKEN ที่ได้รับ = " + scanToken);
     async function startScanner() {
       const message = document.getElementById("message");
 
@@ -85,7 +86,9 @@ async function(decodedText) {
   }
 
   message.textContent = "อ่าน QR สำเร็จ: " + decodedText;
-
+  
+console.log("SMART SCAN TOKEN:", scanToken);
+console.log("QR STUDENT ID:", decodedText);
   if (!scanToken) {
     message.textContent =
       "อ่าน QR สำเร็จ: " + decodedText +
